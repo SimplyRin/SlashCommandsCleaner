@@ -6,7 +6,7 @@ Minecraft 1.13 以降でプレイヤーが `/` を入力し `Tab` を押すと�
 # Permission
 - slashcommandscleaner.bypass: 権限所持者に通常のリストを返します。
 
-# Config
+# Default Config
 ```yaml
 FakeList:
 - help
