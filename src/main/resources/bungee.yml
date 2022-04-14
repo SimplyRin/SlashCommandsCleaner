@@ -1,0 +1,4 @@
+main: net.simplyrin.slashcommandscleaner.SlashCommandsCleaner
+name: SlashCommandsCleaner
+version: 1.0
+author: SimplyRin
