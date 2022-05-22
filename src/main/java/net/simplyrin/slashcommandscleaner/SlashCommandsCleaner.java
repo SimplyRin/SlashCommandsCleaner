@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.RootCommandNode;
 
 import lombok.Getter;
 import net.md_5.bungee.api.event.TabCommandsEvent;
@@ -90,7 +89,8 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		
 		var list = this.getConfig().getStringList("FakeList");
 		
-		event.getCommands().setRoot(new RootCommandNode<Object>());
+		event.clearCommands();
+		
 		for (String command : list) {
 			var child = LiteralArgumentBuilder.literal(command).build();
 			event.getCommands().getRoot().addChild(child);
