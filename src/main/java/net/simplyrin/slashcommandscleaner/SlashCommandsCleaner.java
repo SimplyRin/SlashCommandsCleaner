@@ -85,7 +85,6 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		this.getLogger().info("[Slash-Commands] Packet detected: " + player.getName());
 		
 		if (player.hasPermission("slashcommandscleaner.bypass")) {
-			event.setCancelled(true);
 			return;
 		}
 		
