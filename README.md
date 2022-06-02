@@ -1,25 +1,38 @@
 # SlashCommandsCleaner
 Minecraft 1.13 以降でプレイヤーが `/` を入力し `Tab` を押すと表示されるコマンド一覧を隠せるプラグイン
 
-`BungeeCord v1636`, `Waterfall 1.18 v483` で動作確認
+[BungeeCord-r v9](https://ci.simplyrin.net/job/BungeeCord/) で動作確認
 
 # Permission
 - slashcommandscleaner.bypass: 権限所持者に通常のリストを返します。
+- slashcommandscleaner.member: 権限所持者に `fakelist.member` で設定されているリストを返します。
+- slashcommandscleaner.plus: 権限所持者に `fakelist.plus` で設定されているリストを返します。
+
+`member, plus` 以外でも `fakelist.xxxxx` に追加すれば反映されます。
 
 # Default Config
 ```yaml
-FakeList:
-- help
-- list
-- me
-- msg
-- teammsg
-- tell
-- tm
-- trigger
-- w
-
+fakelist:
+  default:
+  - help
+  - list
+  - me
+  - msg
+  - teammsg
+  - tell
+  - tm
+  - trigger
+  - w
+  member:
+  - ++default
+  - time
+  - weather
+  plus:
+  - ++member
+  - gamemode
 ```
+
+※ `++` から始まるノードは親グループを示します。
 
 # Screenshot
 
