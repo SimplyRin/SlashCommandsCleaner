@@ -2,11 +2,14 @@ package net.simplyrin.slashcommandscleaner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import lombok.Getter;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.TabCommandsEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -14,6 +17,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.protocol.packet.Commands;
 
 /**
  * Created by SimplyRin on 2022/04/12.
@@ -59,7 +63,9 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			}
 			
 			Configuration config = new Configuration();
-			config.set("FakeList", Arrays.asList("help", "list", "me", "msg", "teammsg", "tell", "tm", "trigger", "w"));
+			config.set("fakelist.default", Arrays.asList("help", "list", "me", "msg", "teammsg", "tell", "tm", "trigger", "w"));
+			config.set("fakelist.member", Arrays.asList("++default", "time", "weather"));
+			config.set("fakelist.plus", Arrays.asList("++member", "gamemode"));
 
 			try {
 				provider.save(config, file);
@@ -86,17 +92,51 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		if (player.hasPermission("slashcommandscleaner.bypass")) {
 			return;
 		}
-		
-		var list = this.getConfig().getStringList("FakeList");
-		
+
 		event.clearCommands();
 		
-		for (String command : list) {
-			var child = LiteralArgumentBuilder.literal(command).build();
-			event.getCommands().getRoot().addChild(child);
+		boolean changed = false;
+		
+		List<String> list = new ArrayList<>();
+		
+		for (String key : this.config.getSection("fakelist").getKeys()) {
+			if (player.hasPermission("slashcommandscleaner." + key)) {
+				changed = true;
+
+				this.addChild(player, list, key, event.getCommands());
+			}
 		}
 		
-		this.getLogger().info("[Slash-Commands] Cancelled: " + player.getName());
+		if (changed) {
+			return;
+		}
+		
+		this.addChild(player, list, "default", event.getCommands());
+	}
+	
+	public void addChild(ProxiedPlayer player, List<String> added, String key, Commands commands) {
+		if (added.contains(key)) {
+			return;
+		}
+		added.add(key);
+		
+		this.getLogger().info("[Slash-Commands] " + player.getName() + " -> " + key);
+		
+		var list = this.getConfig().getStringList("fakelist." + key);
+		
+		for (String command : list) {
+			if (command.startsWith("++")) {
+				this.addChild(player, added, command.substring(2), commands);
+				continue;
+			}
+			
+			if (commands.getRoot().getChild(command) != null) {
+				continue;
+			}
+			
+			var child = LiteralArgumentBuilder.literal(command).build();
+			commands.getRoot().addChild(child);
+		}
 	}
 
 }
