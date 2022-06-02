@@ -68,6 +68,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.md-5-r</groupId>
+      <artifactId>bungeecord-parent</artifactId>
+      <version>1.18-R0.1-SNAPSHOT</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.24</version>
