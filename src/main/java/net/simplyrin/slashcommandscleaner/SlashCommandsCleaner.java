@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.RootCommandNode;
 
 import lombok.Getter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -63,6 +64,7 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			}
 			
 			Configuration config = new Configuration();
+			config.set("denychildlist", Arrays.asList("help"));
 			config.set("fakelist.default", Arrays.asList("help", "list", "me", "msg", "teammsg", "tell", "tm", "trigger", "w"));
 			config.set("fakelist.member", Arrays.asList("++default", "time", "weather"));
 			config.set("fakelist.plus", Arrays.asList("++member", "gamemode"));
@@ -92,6 +94,8 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		if (player.hasPermission("slashcommandscleaner.bypass")) {
 			return;
 		}
+		
+		var root = event.getCommands().getRoot();
 
 		event.clearCommands();
 		
@@ -103,7 +107,7 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			if (player.hasPermission("slashcommandscleaner." + key)) {
 				changed = true;
 
-				this.addChild(player, list, key, event.getCommands());
+				this.addChild(player, list, key, event.getCommands(), root);
 			}
 		}
 		
@@ -111,10 +115,10 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			return;
 		}
 		
-		this.addChild(player, list, "default", event.getCommands());
+		this.addChild(player, list, "default", event.getCommands(), root);
 	}
 	
-	public void addChild(ProxiedPlayer player, List<String> added, String key, Commands commands) {
+	public void addChild(ProxiedPlayer player, List<String> added, String key, Commands commands, RootCommandNode root) {
 		if (added.contains(key)) {
 			return;
 		}
@@ -126,7 +130,7 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		
 		for (String command : list) {
 			if (command.startsWith("++")) {
-				this.addChild(player, added, command.substring(2), commands);
+				this.addChild(player, added, command.substring(2), commands, root);
 				continue;
 			}
 			
@@ -134,7 +138,13 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 				continue;
 			}
 			
-			var child = LiteralArgumentBuilder.literal(command).build();
+			var denyChildList = this.getConfig().getStringList("denychildlist");
+			
+			var child = root.getChild(command);
+			if (child == null || denyChildList.contains(command)) {
+				child = LiteralArgumentBuilder.literal(command).build();
+			}
+
 			commands.getRoot().addChild(child);
 		}
 	}
