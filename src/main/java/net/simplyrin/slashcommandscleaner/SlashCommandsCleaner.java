@@ -18,8 +18,6 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.protocol.packet.Commands;
-import net.simplyrin.pluginupdater.ConfigData;
-import net.simplyrin.pluginupdater.PluginUpdater;
 
 /**
  * Created by SimplyRin on 2022/04/12.
@@ -83,9 +81,6 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		}
 		
 		this.getProxy().getPluginManager().registerListener(this, this);
-		
-		new PluginUpdater().initBungee(this, new ConfigData(true, "https://ci.simplyrin.net/job/SlashCommandsCleaner/", 
-				"./plugins/" + this.getDescription().getName() + "/.old-files", false, null, null));
 	}
 	
 	@EventHandler
