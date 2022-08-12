@@ -1,8 +1,6 @@
 # SlashCommandsCleaner
 Minecraft 1.13 以降でプレイヤーが `/` を入力し `Tab` を押すと表示されるコマンド一覧を隠せるプラグイン
 
-`BungeeCord v1636`, `Waterfall 1.18 v483` で動作確認
-
 # Permission
 - slashcommandscleaner.bypass: 権限所持者に通常のリストを返します。
 
