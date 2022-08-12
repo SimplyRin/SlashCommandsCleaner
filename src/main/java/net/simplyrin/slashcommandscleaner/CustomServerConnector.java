@@ -120,11 +120,12 @@ public class CustomServerConnector extends ServerConnector {
 			this.user.setServerEntityId(login.getEntityId());
 
 			// Set tab list size, TODO: what shall we do about packet mutability
-			Login modLogin = new Login(login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), 
+			// Set tab list size, TODO: what shall we do about packet mutability
+			Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(),
 					login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), 
-					login.getDifficulty(), (byte) this.user.getPendingConnection().getListener().getTabListSize(), 
-					login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), 
-					login.isNormalRespawn(), login.isDebug(), login.isFlat());
+					login.getDifficulty(), (byte) this.user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(),
+					login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(),
+					login.isDebug(), login.isFlat(), login.getDeathLocation() );
 
 			this.user.unsafe().sendPacket(modLogin);
 
@@ -141,10 +142,10 @@ public class CustomServerConnector extends ServerConnector {
 				}
 				this.user.getSentBossBars().clear();
 
-				this.user.unsafe().sendPacket(new Respawn(login.getDimension(), login.getWorldName(), login.getSeed(), 
+				this.user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), 
 						login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), 
-						login.isDebug(), login.isFlat(), false));
-				this.user.getServer().disconnect("Quitting");
+						login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
+				this.user.getServer().disconnect( "Quitting" );
 			} else {
 				ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
 				DefinedPacket.writeString(this.bungee.getName() + " (" + this.bungee.getVersion() + ")", brand);
@@ -188,15 +189,16 @@ public class CustomServerConnector extends ServerConnector {
 
 			this.user.setDimensionChange(true);
 			if (login.getDimension() == this.user.getDimension()) {
-				this.user.unsafe().sendPacket(new Respawn((Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), 
+				this.user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), 
 						login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), 
-						login.getLevelType(), login.isDebug(), login.isFlat(), false));
+						login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 			}
 
 			this.user.setServerEntityId(login.getEntityId());
-			this.user.unsafe().sendPacket(new Respawn(login.getDimension(), login.getWorldName(), login.getSeed(), 
+			this.user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), 
 					login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), 
-					login.isDebug(), login.isFlat(), false));
+					login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
+
 			if (this.user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14) {
 				this.user.unsafe().sendPacket(new ViewDistance(login.getViewDistance()));
 			}
