@@ -64,6 +64,7 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			}
 			
 			Configuration config = new Configuration();
+			config.set("always-clear-player-name-prefix", ".");
 			config.set("denychildlist", Arrays.asList("help"));
 			config.set("fakelist.default", Arrays.asList("help", "list", "me", "msg", "teammsg", "tell", "tm", "trigger", "w"));
 			config.set("fakelist.member", Arrays.asList("++default", "time", "weather"));
@@ -76,6 +77,13 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			this.config = provider.load(file);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		// v1.4
+		if (this.config.getString("always-clear-player-name-prefix", null) == null) {
+			this.config.set("always-clear-player-name-prefix", ".");
+			
+			this.saveConfig(provider, this.config, file);
 		}
 		
 		this.getProxy().getPluginManager().registerListener(this, this);
@@ -102,6 +110,10 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		var root = event.getCommands().getRoot();
 
 		event.clearCommands();
+		
+		if (player.getName().startsWith(this.config.getString("always-clear-player-name-prefix", "."))) {
+			return;
+		}
 		
 		boolean changed = false;
 		
