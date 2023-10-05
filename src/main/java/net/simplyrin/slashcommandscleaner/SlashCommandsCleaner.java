@@ -69,11 +69,7 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 			config.set("fakelist.member", Arrays.asList("++default", "time", "weather"));
 			config.set("fakelist.plus", Arrays.asList("++member", "gamemode"));
 
-			try {
-				provider.save(config, file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			this.saveConfig(provider, config, file);
 		}
 		
 		try {
@@ -83,6 +79,14 @@ public class SlashCommandsCleaner extends Plugin implements Listener {
 		}
 		
 		this.getProxy().getPluginManager().registerListener(this, this);
+	}
+	
+	public void saveConfig(ConfigurationProvider provider, Configuration config, File file) {
+		try {
+			provider.save(config, file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@EventHandler
